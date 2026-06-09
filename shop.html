@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Магазин — техника и аксессуары</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0a0b;
+  --bg-2:#120e10;
+  --surface:#171214;
+  --surface-2:#1d171a;
+  --line:rgba(168,120,130,.14);
+  --line-strong:rgba(168,120,130,.28);
+  --wine:#9b2435;
+  --wine-bright:#c23048;
+  --wine-soft:rgba(155,36,53,.16);
+  --text:#f4eced;
+  --muted:#9a8b8f;
+  --muted-2:#6f6266;
+  --radius:14px;
+  --display:'Unbounded',system-ui,sans-serif;
+  --body:'Manrope',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--body);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+/* фон с лёгким бордовым свечением сверху */
+body::before{
+  content:"";
+  position:fixed;inset:0;
+  background:
+    radial-gradient(120% 60% at 80% -10%, rgba(155,36,53,.14), transparent 60%),
+    radial-gradient(90% 50% at 0% 0%, rgba(155,36,53,.06), transparent 55%);
+  pointer-events:none;z-index:0;
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{display:block}
+
+.wrap{max-width:1240px;margin:0 auto;padding:0 22px;position:relative;z-index:1}
+
+/* ───────────── ШАПКА ───────────── */
+.hdr{
+  position:sticky;top:0;z-index:60;
+  background:rgba(13,10,11,.82);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.hdr-row{display:flex;align-items:center;gap:22px;height:66px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:.04em}
+.logo .spark{width:13px;height:13px;border:1.5px solid var(--wine-bright);border-radius:3px;transform:rotate(45deg);position:relative}
+.logo .spark::after{content:"";position:absolute;inset:3px;background:var(--wine-bright);border-radius:1px}
+
+.nav{display:flex;align-items:center;gap:4px;margin-left:8px}
+.nav-link{
+  padding:9px 13px;border-radius:9px;font-weight:600;font-size:14px;color:var(--muted);
+  display:flex;align-items:center;gap:7px;transition:.18s;
+}
+.nav-link:hover{color:var(--text);background:var(--surface)}
+.nav-link.is-open{color:var(--text);background:var(--surface)}
+.caret{width:8px;height:8px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:.2s}
+.nav-link.is-open .caret{transform:rotate(-135deg) translateY(-1px)}
+
+.hdr-tools{margin-left:auto;display:flex;align-items:center;gap:10px}
+.search{
+  display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);
+  border-radius:11px;padding:0 13px;height:40px;width:230px;transition:.18s;
+}
+.search:focus-within{border-color:var(--line-strong);background:var(--surface-2)}
+.search svg{flex:none;opacity:.55}
+.search input{background:none;border:none;outline:none;color:var(--text);font-size:14px;width:100%}
+.search input::placeholder{color:var(--muted-2)}
+.icon-btn{
+  width:40px;height:40px;border-radius:11px;background:var(--surface);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;position:relative;transition:.18s;flex:none;
+}
+.icon-btn:hover{border-color:var(--line-strong);background:var(--surface-2)}
+.cart-badge{
+  position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;
+  background:var(--wine);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;
+}
+.burger{display:none}
+
+/* ───────────── МЕГА-МЕНЮ КАТАЛОГА ───────────── */
+.catalog-panel{
+  position:absolute;left:0;right:0;top:100%;
+  background:var(--bg-2);border-bottom:1px solid var(--line);
+  box-shadow:0 30px 60px -20px rgba(0,0,0,.7);
+  display:none;z-index:55;
+}
+.catalog-panel.is-open{display:block;animation:drop .22s ease}
+@keyframes drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.catalog-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:26px;padding:28px 0 32px}
+.cat-col h4{
+  font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--wine-bright);margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.cat-col h4 .ln{flex:1;height:1px;background:var(--line)}
+.cat-col button{
+  display:block;width:100%;text-align:left;color:var(--muted);font-size:14px;font-weight:500;
+  padding:7px 0;transition:.15s;
+}
+.cat-col button:hover{color:var(--text);padding-left:5px}
+
+.backdrop{position:fixed;inset:0;background:rgba(5,3,4,.6);backdrop-filter:blur(2px);opacity:0;visibility:hidden;transition:.25s;z-index:50}
+.backdrop.is-on{opacity:1;visibility:visible}
+
+/* ───────────── ХЕРО ───────────── */
+.hero{padding:48px 0 38px;border-bottom:1px solid var(--line)}
+.hero-eyebrow{
+  font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--wine-bright);
+  display:flex;align-items:center;gap:10px;margin-bottom:18px;
+}
+.hero-eyebrow .ln{width:38px;height:1px;background:var(--wine)}
+.hero h1{
+  font-family:var(--display);font-weight:800;font-size:clamp(30px,5.4vw,58px);line-height:1.02;
+  letter-spacing:-.01em;max-width:14ch;
+}
+.hero h1 em{font-style:normal;color:var(--wine-bright)}
+.hero p{color:var(--muted);max-width:46ch;margin-top:18px;font-size:16px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.chip{
+  font-size:13px;font-weight:600;padding:8px 14px;border-radius:30px;
+  background:var(--surface);border:1px solid var(--line);color:var(--muted);
+}
+.chip b{color:var(--text)}
+
+/* ───────────── МАГАЗИН ───────────── */
+.shop{display:grid;grid-template-columns:262px 1fr;gap:30px;padding:34px 0 70px;align-items:start}
+
+/* фильтры */
+.filters{position:sticky;top:86px}
+.filters-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.filters-head h3{font-family:var(--display);font-size:16px;font-weight:600}
+.reset{font-size:13px;font-weight:600;color:var(--wine-bright);transition:.15s}
+.reset:hover{color:var(--wine);text-decoration:underline}
+.fgroup{padding:18px 0;border-top:1px solid var(--line)}
+.fgroup:first-of-type{border-top:none;padding-top:0}
+.fgroup>span.t{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);margin-bottom:13px}
+.opt{display:flex;align-items:center;gap:11px;padding:7px 0;cursor:pointer;font-size:14px;color:var(--muted);transition:.15s}
+.opt:hover{color:var(--text)}
+.opt input{display:none}
+.box{width:18px;height:18px;border:1.6px solid var(--line-strong);border-radius:6px;flex:none;display:flex;align-items:center;justify-content:center;transition:.15s}
+.opt input:checked+.box{background:var(--wine);border-color:var(--wine)}
+.box svg{opacity:0;transform:scale(.5);transition:.15s}
+.opt input:checked+.box svg{opacity:1;transform:scale(1)}
+.opt .cnt{margin-left:auto;font-size:12px;color:var(--muted-2)}
+
+/* ползунок цены */
+.price-vals{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:16px}
+.price-vals b{color:var(--text)}
+.range{position:relative;height:30px}
+.range .track{position:absolute;top:13px;left:0;right:0;height:4px;background:var(--surface-2);border-radius:4px}
+.range .fill{position:absolute;top:13px;height:4px;background:var(--wine);border-radius:4px}
+.range input[type=range]{
+  position:absolute;top:0;left:0;width:100%;height:30px;background:none;pointer-events:none;-webkit-appearance:none;appearance:none;
+}
+.range input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;pointer-events:auto;width:18px;height:18px;border-radius:50%;
+  background:var(--text);border:3px solid var(--wine);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.5);
+}
+.range input[type=range]::-moz-range-thumb{
+  pointer-events:auto;width:14px;height:14px;border-radius:50%;background:var(--text);border:3px solid var(--wine);cursor:pointer;
+}
+
+/* каталог */
+.toolbar{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.toolbar .found{font-size:14px;color:var(--muted)}
+.toolbar .found b{color:var(--text);font-weight:700}
+.sort{margin-left:auto;display:flex;align-items:center;gap:9px}
+.sort label{font-size:13px;color:var(--muted-2)}
+.sort select{
+  background:var(--surface);border:1px solid var(--line);color:var(--text);font-family:inherit;font-size:14px;
+  font-weight:600;padding:9px 12px;border-radius:10px;cursor:pointer;outline:none;
+}
+.filter-toggle{display:none}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;display:flex;flex-direction:column;transition:.2s;position:relative;
+}
+.card:hover{border-color:var(--line-strong);transform:translateY(-3px)}
+.card-tag{
+  position:absolute;top:12px;left:12px;z-index:2;font-size:11px;font-weight:700;letter-spacing:.04em;
+  padding:5px 9px;border-radius:7px;background:var(--wine);color:#fff;
+}
+.card-fav{
+  position:absolute;top:10px;right:10px;z-index:2;width:32px;height:32px;border-radius:9px;
+  background:rgba(13,10,11,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;
+  color:var(--muted);transition:.15s;
+}
+.card-fav:hover{color:var(--wine-bright)}
+.card-fav.on{color:var(--wine-bright)}
+
+/* штрихованное «фото» */
+.thumb{
+  aspect-ratio:1/1;position:relative;display:flex;align-items:center;justify-content:center;
+  background:var(--bg-2);
+  background-image:
+    repeating-linear-gradient(45deg, rgba(168,120,130,.10) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(-45deg, rgba(168,120,130,.05) 0 1px, transparent 1px 9px);
+  border-bottom:1px solid var(--line);
+}
+.thumb::after{content:"";position:absolute;inset:0;background:radial-gradient(closest-side,transparent 55%,var(--bg-2));}
+.thumb svg.art{position:relative;z-index:1;width:52%;height:52%;color:var(--wine-bright);opacity:.85;transition:.25s}
+.card:hover .thumb svg.art{opacity:1;transform:scale(1.04)}
+
+.card-body{padding:15px 16px 17px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card-brand{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2)}
+.card-name{font-weight:700;font-size:15px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em}
+.card-spec{font-size:13px;color:var(--muted);margin-top:2px}
+.card-foot{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:14px}
+.price{font-family:var(--display);font-weight:600;font-size:18px;white-space:nowrap}
+.buy{
+  margin-left:auto;height:38px;padding:0 16px;border-radius:10px;background:var(--wine);color:#fff;
+  font-weight:700;font-size:13px;transition:.18s;white-space:nowrap;
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+}
+.buy:hover{background:var(--wine-bright)}
+
+.empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)}
+.empty b{display:block;font-family:var(--display);font-size:18px;color:var(--text);margin-bottom:6px}
+
+/* активные фильтры (чипы) */
+.active-chips{display:flex;flex-wrap:wrap;gap:8px}
+.active-chips:not(:empty){margin-bottom:18px}
+.achip{
+  display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line-strong);
+  color:var(--text);font-size:13px;font-weight:600;padding:7px 8px 7px 13px;border-radius:30px;transition:.15s;
+}
+.achip:hover{border-color:var(--wine)}
+.achip .achip-x{
+  width:18px;height:18px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;
+  justify-content:center;font-size:10px;color:var(--muted);
+}
+.achip:hover .achip-x{color:var(--wine-bright)}
+.achip-clear{background:none;border:none;color:var(--wine-bright);padding:7px 8px;border-radius:30px}
+.achip-clear:hover{text-decoration:underline}
+
+/* подвал */
+.foot{border-top:1px solid var(--line);padding:40px 0;color:var(--muted-2);font-size:13px}
+.foot-row{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+.foot a{color:var(--muted)}
+.foot a:hover{color:var(--text)}
+
+/* ───────────── МОБИЛЬНЫЙ ШИТ ФИЛЬТРОВ ───────────── */
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--bg-2);
+  border-top:1px solid var(--line-strong);border-radius:20px 20px 0 0;
+  max-height:88vh;display:flex;flex-direction:column;
+  transform:translateY(101%);transition:transform .3s cubic-bezier(.3,.8,.3,1);
+  box-shadow:0 -20px 50px rgba(0,0,0,.6);
+}
+.sheet.is-open{transform:none}
+.sheet-grab{padding:12px 0 6px;display:flex;justify-content:center}
+.sheet-grab span{width:42px;height:4px;border-radius:4px;background:var(--line-strong)}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;padding:6px 22px 14px;border-bottom:1px solid var(--line)}
+.sheet-head h3{font-family:var(--display);font-size:17px}
+.sheet-body{overflow-y:auto;padding:8px 22px 16px}
+.sheet-body .filters-head{display:none}
+.sheet-body .fgroup:first-of-type{border-top:none;padding-top:8px}
+.sheet-foot{display:flex;gap:12px;padding:14px 22px;border-top:1px solid var(--line);padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+.sheet-foot button{flex:1;height:48px;border-radius:12px;font-weight:700;font-size:15px}
+.sf-reset{background:var(--surface);border:1px solid var(--line);color:var(--text)}
+.sf-apply{background:var(--wine);color:#fff}
+
+/* ───────────── МОБИЛЬНОЕ МЕНЮ КАТАЛОГА ───────────── */
+.mdrawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(86vw,360px);z-index:70;background:var(--bg-2);
+  border-left:1px solid var(--line-strong);transform:translateX(101%);transition:transform .3s cubic-bezier(.3,.8,.3,1);
+  display:flex;flex-direction:column;
+}
+.mdrawer.is-open{transform:none}
+.mdrawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+.mdrawer-head span{font-family:var(--display);font-weight:600;font-size:16px}
+.mdrawer-body{overflow-y:auto;padding:10px 0}
+.macc summary{
+  list-style:none;cursor:pointer;padding:15px 20px;font-weight:700;font-size:15px;
+  display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);
+}
+.macc summary::-webkit-details-marker{display:none}
+.macc summary .caret{transition:.2s}
+.macc[open] summary .caret{transform:rotate(225deg) translateY(0)}
+.macc .sub{padding:4px 0 12px}
+.macc .sub button{display:block;width:100%;text-align:left;padding:11px 20px 11px 32px;color:var(--muted);font-size:14px}
+.macc .sub button:active{color:var(--text);background:var(--surface)}
+.x-btn{width:36px;height:36px;border-radius:10px;background:var(--surface);display:flex;align-items:center;justify-content:center}
+
+/* ───────────── АДАПТИВ ───────────── */
+@media(max-width:1080px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .catalog-grid{grid-template-columns:repeat(3,1fr);row-gap:24px}
+}
+@media(max-width:900px){
+  .nav{display:none}
+  .search{display:none}
+  .burger{display:flex}
+  .shop{grid-template-columns:1fr;padding-top:24px}
+  .filters{display:none}
+  .filter-toggle{
+    display:flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:11px;
+    background:var(--surface);border:1px solid var(--line);font-weight:700;font-size:14px;
+  }
+  .filter-toggle .fcount{background:var(--wine);color:#fff;font-size:11px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+  .sort label{display:none}
+  .grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .hero{padding:34px 0 30px}
+}
+@media(max-width:560px){
+  .wrap{padding:0 16px}
+  .toolbar{flex-wrap:wrap;gap:10px}
+  .toolbar .found{order:3;width:100%}
+  .sort{margin-left:auto}
+  .card-foot{flex-direction:column;align-items:stretch;gap:10px}
+  .price{font-size:17px}
+  .buy{margin-left:0;width:100%;padding:0 12px}
+  .card-tag{font-size:10px}
+}
+@media(max-width:380px){
+  .grid{gap:10px}
+  .card-body{padding:12px 12px 14px}
+  .buy{height:34px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto}
+}
+:focus-visible{outline:2px solid var(--wine-bright);outline-offset:2px;border-radius:6px}
+</style>
+</head>
+<body>
+
+<!-- ШАПКА -->
+<header class="hdr">
+  <div class="wrap hdr-row">
+    <a href="#" class="logo" aria-label="Магазин, на главную"><span class="spark"></span>Магазин</a>
+
+    <nav class="nav" aria-label="Каталог">
+      <button class="nav-link" id="catBtn" aria-expanded="false">Каталог <span class="caret"></span></button>
+      <button class="nav-link" data-cat="Смартфоны">Смартфоны</button>
+      <button class="nav-link" data-cat="Наушники">Наушники</button>
+      <button class="nav-link" data-cat="Часы">Часы</button>
+      <button class="nav-link" data-cat="Планшеты">Планшеты</button>
+      <button class="nav-link" data-cat="Аксессуары">Аксессуары</button>
+    </nav>
+
+    <div class="hdr-tools">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input type="search" id="searchInput" placeholder="Поиск по технике…">
+      </div>
+      <button class="icon-btn" aria-label="Избранное">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15.5S2.5 11.5 2.5 6.8C2.5 4.7 4.1 3.2 6 3.2c1.2 0 2.3.7 3 1.7.7-1 1.8-1.7 3-1.7 1.9 0 3.5 1.5 3.5 3.6C15.5 11.5 9 15.5 9 15.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="icon-btn" id="cartBtn" aria-label="Корзина">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 2.5h2l1.4 8.2a1 1 0 0 0 1 .8h6.2a1 1 0 0 0 1-.8l1-5.2H4.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="15" r="1.1" fill="currentColor"/><circle cx="13" cy="15" r="1.1" fill="currentColor"/></svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </button>
+      <button class="icon-btn burger" id="burgerBtn" aria-label="Меню">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 5h13M2.5 9h13M2.5 13h13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- мега-меню каталога (десктоп) -->
+  <div class="catalog-panel" id="catPanel">
+    <div class="wrap">
+      <div class="catalog-grid" id="catalogGrid"></div>
+    </div>
+  </div>
+</header>
+
+<div class="backdrop" id="backdrop"></div>
+
+<!-- ХЕРО -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow"><span class="ln"></span>Техника Apple и аксессуары</div>
+    <h1>Гаджеты, которые <em>работают</em> из коробки</h1>
+    <p>Оригинальная техника с гарантией. Проверяем каждое устройство перед выдачей, помогаем с настройкой и переносом данных.</p>
+    <div class="hero-meta">
+      <span class="chip"><b>14 дней</b> на возврат</span>
+      <span class="chip">Гарантия <b>1 год</b></span>
+      <span class="chip">Доставка <b>по РФ</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- МАГАЗИН -->
+<main class="wrap shop">
+  <!-- ФИЛЬТРЫ (десктоп) -->
+  <aside class="filters" id="filtersDesktop"></aside>
+
+  <section>
+    <div class="toolbar">
+      <button class="filter-toggle" id="openSheet">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Фильтры <span class="fcount" id="fcount" hidden>0</span>
+      </button>
+      <span class="found">Найдено: <b id="foundN">0</b></span>
+      <div class="sort">
+        <label for="sortSel">Сортировка</label>
+        <select id="sortSel">
+          <option value="pop">По популярности</option>
+          <option value="asc">Сначала дешёвые</option>
+          <option value="desc">Сначала дорогие</option>
+        </select>
+      </div>
+    </div>
+    <div class="active-chips" id="chips"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+
+<!-- ПОДВАЛ -->
+<footer class="foot">
+  <div class="wrap foot-row">
+    <div><span class="logo" style="font-size:16px"><span class="spark"></span>Магазин</span></div>
+    <div>© 2025 · Магазин техники · <a href="#">Доставка и оплата</a> · <a href="#">Контакты</a></div>
+    <div><a href="tel:+70000000000">+7 (000) 000-00-00</a></div>
+  </div>
+</footer>
+
+<!-- МОБИЛЬНЫЙ ШИТ ФИЛЬТРОВ -->
+<div class="sheet" id="sheet" role="dialog" aria-label="Фильтры">
+  <div class="sheet-grab"><span></span></div>
+  <div class="sheet-head"><h3>Фильтры</h3><button class="x-btn" id="closeSheet" aria-label="Закрыть"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></div>
+  <div class="sheet-body" id="filtersMobile"></div>
+  <div class="sheet-foot">
+    <button class="sf-reset" id="sheetReset">Сбросить</button>
+    <button class="sf-apply" id="sheetApply">Показать <span id="applyN"></span></button>
+  </div>
+</div>
+
+<!-- МОБИЛЬНОЕ МЕНЮ КАТАЛОГА -->
+<aside class="mdrawer" id="mdrawer" role="dialog" aria-label="Каталог">
+  <div class="mdrawer-head"><span>Каталог</span><button class="x-btn" id="closeDrawer" aria-label="Закрыть"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></div>
+  <div class="mdrawer-body" id="drawerBody"></div>
+</aside>
+
+<script>
+/* ─── ДАННЫЕ ТОВАРОВ (плейсхолдеры — заменить на реальные) ─── */
+const PRODUCTS = [
+  {id:1, name:'iPhone 15 Pro', brand:'Apple', cat:'Смартфоны', sub:'iPhone 15 Pro', spec:'256 ГБ · Titanium', price:119990, icon:'phone', tag:'Хит', pop:98},
+  {id:2, name:'iPhone 15',     brand:'Apple', cat:'Смартфоны', sub:'iPhone 15',     spec:'128 ГБ · Blue',     price:89990,  icon:'phone', pop:90},
+  {id:3, name:'iPhone 14',     brand:'Apple', cat:'Смартфоны', sub:'iPhone 14',     spec:'128 ГБ · Midnight', price:69990,  icon:'phone', pop:75},
+  {id:4, name:'AirPods Pro 2', brand:'Apple', cat:'Наушники',  sub:'Вкладыши',      spec:'USB-C · ANC',       price:24990,  icon:'buds',  tag:'Хит', pop:95},
+  {id:5, name:'AirPods 4',     brand:'Apple', cat:'Наушники',  sub:'Вкладыши',      spec:'2024 · USB-C',      price:17990,  icon:'buds',  pop:82},
+  {id:6, name:'Galaxy Buds3',  brand:'Samsung',cat:'Наушники', sub:'Вкладыши',      spec:'TWS · ANC',         price:12990,  icon:'buds',  pop:60},
+  {id:7, name:'AirPods Max',   brand:'Apple', cat:'Наушники',  sub:'Накладные',     spec:'Полноразмерные',    price:59990,  icon:'over',  pop:70},
+  {id:8, name:'Sony WH-1000XM5',brand:'Sony', cat:'Наушники',  sub:'Накладные',     spec:'Шумоподавление',    price:34990,  icon:'over',  pop:78},
+  {id:9, name:'Apple Watch S9', brand:'Apple',cat:'Часы',      sub:'Apple Watch',   spec:'45 мм · GPS',       price:41990,  icon:'watch', pop:85},
+  {id:10,name:'Watch Ultra 2', brand:'Apple', cat:'Часы',      sub:'Apple Watch',   spec:'49 мм · Titanium',  price:79990,  icon:'watch', tag:'New', pop:72},
+  {id:11,name:'Galaxy Watch6', brand:'Samsung',cat:'Часы',     sub:'Galaxy Watch',  spec:'44 мм · LTE',       price:27990,  icon:'watch', pop:55},
+  {id:12,name:'iPad Air',      brand:'Apple', cat:'Планшеты',  sub:'iPad',          spec:'11" · 128 ГБ',      price:64990,  icon:'tablet',pop:68},
+  {id:13,name:'MagSafe зарядка',brand:'Apple',cat:'Аксессуары',sub:'Зарядки',       spec:'15 Вт · беспров.',  price:4490,   icon:'plug',  pop:50},
+  {id:14,name:'Power Bank 20K',brand:'Xiaomi',cat:'Аксессуары',sub:'Зарядки',       spec:'20000 мА·ч',        price:2990,   icon:'plug',  pop:48},
+  {id:15,name:'Кабель USB-C',  brand:'Apple', cat:'Аксессуары',sub:'Кабели',        spec:'1 м · 60 Вт',       price:1990,   icon:'plug',  pop:40},
+  {id:16,name:'Кожаный чехол', brand:'Apple', cat:'Аксессуары',sub:'Чехлы',         spec:'iPhone 15 Pro',     price:5990,   icon:'plug',  pop:44},
+];
+
+/* ─── КОНТУРНЫЕ ИКОНКИ (вместо фото) ─── */
+const ART = {
+  phone:'<rect x="32" y="6" width="36" height="88" rx="9" stroke="currentColor" stroke-width="2.2"/><rect x="42" y="13" width="16" height="2.4" rx="1.2" fill="currentColor"/><rect x="55" y="20" width="9" height="14" rx="3" stroke="currentColor" stroke-width="1.6"/>',
+  buds:'<path d="M38 22c-7 0-11 6-11 14 0 6 3 10 8 10 4 0 5-3 5-8V26c0-2-1-4-2-4z" stroke="currentColor" stroke-width="2"/><path d="M40 46v34" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M62 22c7 0 11 6 11 14 0 6-3 10-8 10-4 0-5-3-5-8V26c0-2 1-4 2-4z" stroke="currentColor" stroke-width="2"/><path d="M60 46v34" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  over:'<path d="M22 56V48a28 28 0 0 1 56 0v8" stroke="currentColor" stroke-width="2.2"/><rect x="16" y="54" width="14" height="26" rx="6" stroke="currentColor" stroke-width="2.2"/><rect x="70" y="54" width="14" height="26" rx="6" stroke="currentColor" stroke-width="2.2"/>',
+  watch:'<rect x="33" y="30" width="34" height="40" rx="10" stroke="currentColor" stroke-width="2.2"/><path d="M40 30l3-14h14l3 14M40 70l3 14h14l3-14" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M67 44h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',
+  tablet:'<rect x="22" y="10" width="56" height="80" rx="8" stroke="currentColor" stroke-width="2.2"/><rect x="29" y="18" width="42" height="58" rx="2" stroke="currentColor" stroke-width="1.4"/><circle cx="50" cy="83" r="2.2" fill="currentColor"/>',
+  plug:'<path d="M50 18v18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="36" y="36" width="28" height="20" rx="5" stroke="currentColor" stroke-width="2.2"/><path d="M50 56c0 12-14 10-14 22a8 8 0 0 0 16 0" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M43 24v8M57 24v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'
+};
+const artSvg = t => `<svg class="art" viewBox="0 0 100 100" fill="none">${ART[t]||ART.plug}</svg>`;
+
+/* ─── КАТЕГОРИИ ДЛЯ КАТАЛОГА ─── */
+const CATALOG = {
+  'Смартфоны':['iPhone 15 Pro','iPhone 15','iPhone 14'],
+  'Наушники':['Вкладыши','Накладные'],
+  'Часы':['Apple Watch','Galaxy Watch'],
+  'Планшеты':['iPad'],
+  'Аксессуары':['Зарядки','Кабели','Чехлы']
+};
+const BRANDS = ['Apple','Samsung','Sony','Xiaomi'];
+const CATS = ['Смартфоны','Наушники','Часы','Планшеты','Аксессуары'];
+const PMIN = 1000, PMAX = 120000;
+
+/* ─── СОСТОЯНИЕ ─── */
+const fmt = n => n.toLocaleString('ru-RU')+' ₽';
+let state = {brands:new Set(), cats:new Set(), sub:null, min:PMIN, max:PMAX, sort:'pop', q:'', cart:0, fav:new Set()};
+
+/* ─── РАЗМЕТКА ФИЛЬТРОВ (общая для десктопа и шита) ─── */
+function filtersHTML(prefix){
+  const opt = (group,val,label) => `
+    <label class="opt"><input type="checkbox" data-group="${group}" value="${val}" id="${prefix}-${group}-${val}">
+      <span class="box"><svg width="11" height="11" viewBox="0 0 11 11"><path d="M1.5 6l3 3 5-7" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      ${label}<span class="cnt">${PRODUCTS.filter(p=> group==='brand'?p.brand===val:p.cat===val).length}</span></label>`;
+  return `
+    <div class="filters-head"><h3>Подбор</h3><button class="reset" data-reset>Сбросить</button></div>
+    <div class="fgroup"><span class="t">Категория</span>${CATS.map(c=>opt('cat',c,c)).join('')}</div>
+    <div class="fgroup"><span class="t">Бренд</span>${BRANDS.map(b=>opt('brand',b,b)).join('')}</div>
+    <div class="fgroup"><span class="t">Цена</span>
+      <div class="price-vals"><b id="${prefix}-pmin">${fmt(PMIN)}</b><b id="${prefix}-pmax">${fmt(PMAX)}</b></div>
+      <div class="range">
+        <div class="track"></div><div class="fill" id="${prefix}-fill"></div>
+        <input type="range" min="${PMIN}" max="${PMAX}" step="1000" value="${PMIN}" data-r="min" id="${prefix}-rmin">
+        <input type="range" min="${PMIN}" max="${PMAX}" step="1000" value="${PMAX}" data-r="max" id="${prefix}-rmax">
+      </div>
+    </div>`;
+}
+
+/* ─── КАТАЛОГ-МЕНЮ ─── */
+function buildCatalog(){
+  document.getElementById('catalogGrid').innerHTML = Object.entries(CATALOG).map(([cat,subs])=>`
+    <div class="cat-col">
+      <h4><span>${cat}</span><span class="ln"></span></h4>
+      <button data-cat="${cat}">Все · ${cat}</button>
+      ${subs.map(s=>`<button data-cat="${cat}" data-sub="${s}">${s}</button>`).join('')}
+    </div>`).join('');
+
+  const db = document.getElementById('drawerBody');
+  db.innerHTML = Object.entries(CATALOG).map(([cat,subs])=>`
+    <details class="macc">
+      <summary>${cat}<span class="caret"></span></summary>
+      <div class="sub">
+        <button data-cat="${cat}">Все · ${cat}</button>
+        ${subs.map(s=>`<button data-cat="${cat}" data-sub="${s}">${s}</button>`).join('')}
+      </div>
+    </details>`).join('');
+
+  // только один список открыт одновременно
+  db.querySelectorAll('.macc').forEach(d=>{
+    d.addEventListener('toggle', ()=>{
+      if(d.open) db.querySelectorAll('.macc').forEach(o=>{ if(o!==d) o.open=false; });
+    });
+  });
+}
+
+/* ─── РЕНДЕР КАРТОЧЕК ─── */
+function render(){
+  let list = PRODUCTS.filter(p=>{
+    if(state.cats.size && !state.cats.has(p.cat)) return false;
+    if(state.sub && p.sub !== state.sub) return false;
+    if(state.brands.size && !state.brands.has(p.brand)) return false;
+    if(p.price < state.min || p.price > state.max) return false;
+    if(state.q && !(p.name+' '+p.brand+' '+p.spec).toLowerCase().includes(state.q.toLowerCase())) return false;
+    return true;
+  });
+  if(state.sort==='asc') list.sort((a,b)=>a.price-b.price);
+  else if(state.sort==='desc') list.sort((a,b)=>b.price-a.price);
+  else list.sort((a,b)=>b.pop-a.pop);
+
+  const grid = document.getElementById('grid');
+  if(!list.length){
+    grid.innerHTML = `<div class="empty"><b>Ничего не нашли</b>Попробуйте сбросить фильтры или изменить запрос.</div>`;
+  } else {
+    grid.innerHTML = list.map(p=>`
+      <article class="card">
+        ${p.tag?`<span class="card-tag">${p.tag}</span>`:''}
+        <button class="card-fav ${state.fav.has(p.id)?'on':''}" data-fav="${p.id}" aria-label="В избранное">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="${state.fav.has(p.id)?'currentColor':'none'}"><path d="M9 15.5S2.5 11.5 2.5 6.8C2.5 4.7 4.1 3.2 6 3.2c1.2 0 2.3.7 3 1.7.7-1 1.8-1.7 3-1.7 1.9 0 3.5 1.5 3.5 3.6C15.5 11.5 9 15.5 9 15.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="thumb">${artSvg(p.icon)}</div>
+        <div class="card-body">
+          <span class="card-brand">${p.brand}</span>
+          <span class="card-name">${p.name}</span>
+          <span class="card-spec">${p.spec}</span>
+          <div class="card-foot">
+            <span class="price">${fmt(p.price)}</span>
+            <button class="buy" data-buy="${p.id}">В корзину</button>
+          </div>
+        </div>
+      </article>`).join('');
+  }
+  document.getElementById('foundN').textContent = list.length;
+  document.getElementById('applyN').textContent = '· '+list.length;
+  const n = state.cats.size + state.brands.size + (state.sub?1:0) + (state.min>PMIN||state.max<PMAX?1:0);
+  const fc = document.getElementById('fcount');
+  fc.textContent = n; fc.hidden = n===0;
+  renderChips();
+}
+
+function renderChips(){
+  const c=[];
+  state.cats.forEach(cat=> c.push({k:'cat:'+cat, label:cat}));
+  if(state.sub) c.push({k:'sub', label:state.sub});
+  state.brands.forEach(b=> c.push({k:'brand:'+b, label:b}));
+  if(state.min>PMIN || state.max<PMAX) c.push({k:'price', label:fmt(state.min)+' – '+fmt(state.max)});
+  const el = document.getElementById('chips');
+  el.innerHTML = c.map(x=>`<button class="achip" data-chip="${x.k}">${x.label}<span class="achip-x">✕</span></button>`).join('')
+    + (c.length>1 ? `<button class="achip-clear" data-chip="all">Сбросить всё</button>` : '');
+}
+
+/* ─── СИНХРОНИЗАЦИЯ ЧЕКБОКСОВ ─── */
+function syncChecks(){
+  document.querySelectorAll('input[data-group]').forEach(i=>{
+    const set = i.dataset.group==='brand'?state.brands:state.cats;
+    i.checked = set.has(i.value);
+  });
+}
+function syncRanges(){
+  ['filtersDesktop','sheet'].forEach(scope=>{
+    const root = document.getElementById(scope); if(!root) return;
+    const rmin = root.querySelector('[data-r=min]'), rmax = root.querySelector('[data-r=max]');
+    if(!rmin) return;
+    rmin.value = state.min; rmax.value = state.max;
+    paintRange(root);
+  });
+}
+function paintRange(root){
+  const fill = root.querySelector('.fill');
+  const pminEl = root.querySelector('[id$="-pmin"]'), pmaxEl = root.querySelector('[id$="-pmax"]');
+  if(!fill) return;
+  const l = (state.min-PMIN)/(PMAX-PMIN)*100, r = (state.max-PMIN)/(PMAX-PMIN)*100;
+  fill.style.left = l+'%'; fill.style.right = (100-r)+'%';
+  pminEl.textContent = fmt(state.min); pmaxEl.textContent = fmt(state.max);
+}
+
+/* ─── ИНИЦИАЛИЗАЦИЯ ─── */
+document.getElementById('filtersDesktop').innerHTML = filtersHTML('d');
+document.getElementById('filtersMobile').innerHTML = filtersHTML('m');
+buildCatalog();
+render();
+syncRanges();
+
+/* ─── ОБРАБОТЧИКИ ─── */
+// чекбоксы (делегирование)
+document.body.addEventListener('change', e=>{
+  const i = e.target.closest('input[data-group]'); if(!i) return;
+  const set = i.dataset.group==='brand'?state.brands:state.cats;
+  i.checked ? set.add(i.value) : set.delete(i.value);
+  if(i.dataset.group==='cat') state.sub = null;
+  syncChecks(); render();
+});
+// ползунки цены
+document.body.addEventListener('input', e=>{
+  const r = e.target.closest('input[data-r]'); if(!r) return;
+  const root = r.closest('#filtersDesktop, #sheet');
+  let mn = +root.querySelector('[data-r=min]').value, mx = +root.querySelector('[data-r=max]').value;
+  if(mn > mx-1000){ if(r.dataset.r==='min') mn = mx-1000; else mx = mn+1000; }
+  state.min = mn; state.max = mx;
+  syncRanges(); render();
+});
+// сброс
+document.body.addEventListener('click', e=>{
+  if(e.target.closest('[data-reset]') || e.target.id==='sheetReset'){
+    state.brands.clear(); state.cats.clear(); state.sub=null; state.min=PMIN; state.max=PMAX; state.q='';
+    document.getElementById('searchInput').value='';
+    syncChecks(); syncRanges(); render();
+  }
+});
+// сортировка
+document.getElementById('sortSel').addEventListener('change', e=>{ state.sort=e.target.value; render(); });
+// поиск
+document.getElementById('searchInput').addEventListener('input', e=>{ state.q=e.target.value; render(); });
+// корзина / избранное / категория-кнопки
+document.body.addEventListener('click', e=>{
+  const buy = e.target.closest('[data-buy]');
+  if(buy){ state.cart++; document.getElementById('cartBadge').textContent = state.cart; bump(buy); }
+  const fav = e.target.closest('[data-fav]');
+  if(fav){ const id=+fav.dataset.fav; state.fav.has(id)?state.fav.delete(id):state.fav.add(id); render(); }
+  const nav = e.target.closest('[data-cat]');
+  if(nav){
+    state.cats = new Set([nav.dataset.cat]);
+    state.sub = nav.dataset.sub || null;
+    syncChecks(); render(); closeAll();
+    document.querySelector('.shop').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  const chip = e.target.closest('[data-chip]');
+  if(chip){
+    const k = chip.dataset.chip;
+    if(k==='all'){ state.brands.clear(); state.cats.clear(); state.sub=null; state.min=PMIN; state.max=PMAX; }
+    else if(k==='sub') state.sub=null;
+    else if(k==='price'){ state.min=PMIN; state.max=PMAX; }
+    else if(k.startsWith('cat:')){ state.cats.delete(k.slice(4)); state.sub=null; }
+    else if(k.startsWith('brand:')) state.brands.delete(k.slice(6));
+    syncChecks(); syncRanges(); render();
+  }
+});
+function bump(btn){ btn.textContent='Добавлено ✓'; setTimeout(()=>btn.textContent='В корзину',1100); }
+
+/* ─── ОТКРЫТИЕ/ЗАКРЫТИЕ ПАНЕЛЕЙ ─── */
+const bd = document.getElementById('backdrop');
+const catPanel = document.getElementById('catPanel'), catBtn = document.getElementById('catBtn');
+const sheet = document.getElementById('sheet'), drawer = document.getElementById('mdrawer');
+function closeAll(){
+  catPanel.classList.remove('is-open'); catBtn.classList.remove('is-open'); catBtn.setAttribute('aria-expanded','false');
+  sheet.classList.remove('is-open'); drawer.classList.remove('is-open'); bd.classList.remove('is-on');
+  document.body.style.overflow='';
+}
+catBtn.addEventListener('click', ()=>{
+  const open = catPanel.classList.toggle('is-open');
+  catBtn.classList.toggle('is-open', open); catBtn.setAttribute('aria-expanded', open);
+  bd.classList.toggle('is-on', open);
+});
+document.getElementById('openSheet').addEventListener('click', ()=>{ sheet.classList.add('is-open'); bd.classList.add('is-on'); document.body.style.overflow='hidden'; });
+document.getElementById('closeSheet').addEventListener('click', closeAll);
+document.getElementById('sheetApply').addEventListener('click', closeAll);
+document.getElementById('burgerBtn').addEventListener('click', ()=>{ drawer.classList.add('is-open'); bd.classList.add('is-on'); document.body.style.overflow='hidden'; });
+document.getElementById('closeDrawer').addEventListener('click', closeAll);
+bd.addEventListener('click', closeAll);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAll(); });
+document.getElementById('cartBtn').addEventListener('click', ()=> bump2());
+function bump2(){ const b=document.getElementById('cartBadge'); b.animate([{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:250}); }
+</script>
+</body>
+</html>
